@@ -7,23 +7,18 @@ const ROOT = './app';
 var gulp = require('gulp');
 var express = require('express');
 var apiUrl = require(ROOT + '/restApi.js');
+var app = express();
 
-gulp.task('serve', function () {
-    var app = express();
-    
+gulp.task('route', function () {
     app.use(express.static(ROOT));
-
     app.get('/', function (req, res) {
         res.statusCode = 200;
         res.setHeader('Content-Type', CONTENT_HTML);
-        res.sendFile('index.html', {root : ROOT});
+        res.sendFile('index.html', { root: ROOT });
     });
-    app.get('/about', function (req, res) {
-        res.statusCode = 200;
-        res.setHeader('Content-Type', CONTENT_HTML);
-        res.sendFile('about.html', {root : ROOT});
-    });
+});
 
+gulp.task('api', function () {
     app.get(apiUrl.url().GetStudentbyIdApi, function (req, res) {
         console.info('GetStudentbyIdApi called');
         res.statusCode = 200;
@@ -35,8 +30,10 @@ gulp.task('serve', function () {
         }
         res.send(JSON.stringify(data));
     });
-    app.listen(PORT);
-    console.info('server started');
 });
 
-gulp.task('default', ['serve']);
+gulp.task('serve', function () {
+    app.listen(PORT);
+});
+
+gulp.task('default', ['route', 'api', 'serve']);
